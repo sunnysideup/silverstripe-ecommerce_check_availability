@@ -126,3 +126,5 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 	}
 
 }
+
+

@@ -18,7 +18,25 @@ class OrderStep_CheckAvailability extends OrderStep {
 	}
 
 	public function doStep($order) {
-		return true;
+		$replacementArray["Order"] = $order;
+		$replacementArray["EmailLogo"] = SiteConfig::current_site_config()->EmailLogo();
+ 		$from = Order_Email::get_from_email();
+ 		//why are we using this email and NOT the member.EMAIL?
+ 		//for historical reasons????
+ 		$to = Order_Email::get_from_email();
+ 		if($from && $to) {
+			$subject = _t("OrderStep_CheckAvailability.NEWORDERTOBECHECKED", "New order to be checked");
+			//TO DO: should be a payment specific message as well???
+			$email = new Order_ReceiptEmail();
+			if(!($email instanceOf Email)) {
+				user_error("No correct email class provided.", E_USER_ERROR);
+			}
+			$email->setFrom($from);
+			$email->setTo($to);
+			$email->setSubject();
+			$email->populateTemplate($replacementArray);
+			return $email->send(null, $order, false);
+		}
 	}
 
 	/**
