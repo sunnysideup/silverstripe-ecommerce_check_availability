@@ -32,7 +32,12 @@ class OrderStep_CheckAvailability extends OrderStep {
 		return null;
 	}
 
-
+	/**
+	 * Allows the opportunity for the Order Step to add any fields to Order::getCMSFields
+	 *@param FieldSet $fields
+	 *@param Order $order
+	 *@return FieldSet
+	 **/
 	function addOrderStepFields(&$fields, $order) {
 		OrderStatusLog::add_available_log_classes_array("OrderStatusLog_CheckAvailability");
 		$msg = _t("OrderStep.MUSTDOAVAILABILITYCHECK", " ... To move this order to the next step you must carry out a availability check (are the products available) by creating a record here (click me)");
