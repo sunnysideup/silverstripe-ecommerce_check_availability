@@ -33,7 +33,7 @@ class OrderStep_CheckAvailability extends OrderStep {
 			}
 			$email->setFrom($from);
 			$email->setTo($to);
-			$email->setSubject();
+			$email->setSubject($subject);
 			$email->populateTemplate($replacementArray);
 			return $email->send(null, $order, false);
 		}
