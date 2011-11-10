@@ -13,8 +13,13 @@ SilverStripe 2.4 or greater
 
 Documentation
 -----------------------------------------------
-This module is meant for orders that are not 100%
-clear (that may need adjustment). 
+This module allows you to create orders that need
+to be checked for availability.  For example - people
+book a cottage, but before it is confirmed, the shop
+owner needs to check that is available.
+
+This means that people can place an order but with
+the caveat that the order needs to be confirmed.
 
 Installation Instructions
 -----------------------------------------------
