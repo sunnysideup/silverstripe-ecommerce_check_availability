@@ -60,7 +60,10 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 		$fields->removeByName("Note");
 		$fields->removeByName("InternalUseOnly");
 		$fields->removeByName("EmailSent");
-		$fields->addFieldsToTab('Root.Main', new CheckboxField("AvailabilityChecked", _t("OrderStatusLog.CHECKED", "Availability is confirmed")));
+		$fields->addFieldToTab(
+			'Root.Main',
+			new CheckboxField("AvailabilityChecked", _t("OrderStatusLog.CHECKED", "Availability is confirmed"))
+		);
 		return $fields;
 	}
 
