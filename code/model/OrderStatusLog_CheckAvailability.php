@@ -128,6 +128,9 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 		return $this->getCustomerNote();
 	}
 
+
+
+
 }
 
 

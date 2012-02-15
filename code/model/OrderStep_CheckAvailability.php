@@ -64,4 +64,21 @@ class OrderStep_CheckAvailability extends OrderStep {
 	}
 
 
+	/**
+	 * tells the order to display itself with an alternative display page.
+	 * in that way, orders can be displayed differently for certain steps
+	 * for example, in a print step, the order can be displayed in a
+	 * PRINT ONLY format.
+	 *
+	 * When the method return null, the order is displayed using the standard display page
+	 * @see Order::DisplayPage
+	 *
+	 *
+	 * @return Null|Object (Page)
+	 **/
+	public function AlternativeDisplayPage() {
+		return DataObject::get_one("OrderConfirmationPage");
+	}
+
+
 }
