@@ -20,13 +20,6 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 		return false;
 	}
 
-	protected static $true_and_false_definitions = array(
-		"yes" => 1,
-		"no" => 0
-	);
-		static function set_true_and_false_definitions(array $a) {self::$true_and_false_definitions = $a;}
-		static function get_true_and_false_definitions() {return self::$true_and_false_definitions;}
-
 	public static $searchable_fields = array(
 		'OrderID' => array(
 			'field' => 'NumericField',
@@ -83,7 +76,12 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 			$order = $this->Order();
 			if($order) {
 				if(!$order->IsSubmitted()) {
-					$className = OrderStatusLog::get_order_status_log_class_used_for_submitting_order();
+					if(class_exists("EcommerceConfig")) {
+						$className = EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order");
+					}
+					else {
+						$className = OrderStatusLog::get_order_status_log_class_used_for_submitting_order;
+					}
 					if(class_exists($className)) {
 						$obj = new $className();
 						if($obj instanceOf OrderStatusLog) {
@@ -96,12 +94,12 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 							$obj->write();
 						}
 						else {
-							user_error('OrderStatusLog::$order_status_log_class_used_for_submitting_order refers to a class that is NOT an instance of OrderStatusLog');
+							user_error('EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order") refers to a class that is NOT an instance of OrderStatusLog');
 						}
 
 					}
 					else {
-						user_error('OrderStatusLog::$order_status_log_class_used_for_submitting_order refers to a non-existing class');
+						user_error('EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order") refers to a non-existing class');
 					}
 				}
 			}

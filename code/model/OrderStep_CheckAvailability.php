@@ -57,7 +57,6 @@ class OrderStep_CheckAvailability extends OrderStep {
 	 *@return FieldSet
 	 **/
 	function addOrderStepFields(&$fields, $order) {
-		OrderStatusLog::add_available_log_classes_array("OrderStatusLog_CheckAvailability");
 		$msg = _t("OrderStep.MUSTDOAVAILABILITYCHECK", " ... To move this order to the next step you must carry out a availability check (are the products available) by creating a record here (click me)");
 		$fields->addFieldToTab("Root.Next", $order->OrderStatusLogsTable("OrderStatusLog_CheckAvailability", $msg));
 		return $fields;
