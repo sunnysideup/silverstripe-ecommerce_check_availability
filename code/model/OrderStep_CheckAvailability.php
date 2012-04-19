@@ -19,7 +19,7 @@ class OrderStep_CheckAvailability extends OrderStep {
 
 	public function doStep($order) {
 		$replacementArray["Order"] = $order;
-		$replacementArray["EmailLogo"] = SiteConfig::current_site_config()->EmailLogo();
+		$replacementArray["EmailLogo"] = $this->EcomConfig()->EmailLogo();
  		$from = Order_Email::get_from_email();
  		//why are we using this email and NOT the member.EMAIL?
  		//for historical reasons????
@@ -78,6 +78,5 @@ class OrderStep_CheckAvailability extends OrderStep {
 	public function AlternativeDisplayPage() {
 		return DataObject::get_one("OrderConfirmationPage");
 	}
-
 
 }
