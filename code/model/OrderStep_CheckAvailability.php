@@ -18,6 +18,9 @@ class OrderStep_CheckAvailability extends OrderStep {
 	}
 
 	public function doStep($order) {
+		if($this->hasBeenSent($order)) {
+			return true;
+		}
 		$replacementArray["Order"] = $order;
 		$replacementArray["EmailLogo"] = $this->EcomConfig()->EmailLogo();
  		$from = Order_Email::get_from_email();
@@ -45,9 +48,11 @@ class OrderStep_CheckAvailability extends OrderStep {
 	 **/
 	public function nextStep($order) {
 		if(DataObject::get_one("OrderStatusLog_CheckAvailability", "\"OrderID\" = ".$order->ID." AND \"AvailabilityChecked\" = 1")) {
-			return parent::nextStep($order);
+			if($nextStep = parent::nextStep($order)) {
+				$order->StatusID = $nextStep->ID;
+				return $nextStep;
+			}
 		}
-		return null;
 	}
 
 	/**
