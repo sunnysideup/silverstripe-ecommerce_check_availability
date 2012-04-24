@@ -3,6 +3,10 @@
 
 class OrderStep_CheckAvailability extends OrderStep {
 
+	public static $db = array(
+		"MinimumOrderAmount" => "Int"
+	);
+
 	public static $defaults = array(
 		"CustomerCanEdit" => 1,
 		"CustomerCanCancel" => 1,
@@ -18,12 +22,17 @@ class OrderStep_CheckAvailability extends OrderStep {
 	}
 
 	public function doStep($order) {
-		$subject = $this->EmailSubject;
-		$message = $this->CustomerMessage;
-		if(!$this->hasBeenSent($order)) {
-			return $order->sendStatusChange($subject, $message);
+		if($order->Total() < $this->MinimumOrderAmount) {
+			return true;
 		}
-		return true;
+		else {
+			$subject = $this->EmailSubject;
+			$message = $this->CustomerMessage;
+			if(!$this->hasBeenSent($order)) {
+				return $order->sendStatusChange($subject, $message);
+			}
+			return true;
+		}
 	}
 
 	/**
@@ -31,6 +40,9 @@ class OrderStep_CheckAvailability extends OrderStep {
 	 *@return DataObject | Null - DataObject = OrderStep
 	 **/
 	public function nextStep($order) {
+		if($order->Total() < $this->MinimumOrderAmount) {
+			return parent::nextStep($order);
+		}
 		if(DataObject::get_one("OrderStatusLog_CheckAvailability", "\"OrderID\" = ".$order->ID." AND \"AvailabilityChecked\" = 1")) {
 			return parent::nextStep($order);
 		}
