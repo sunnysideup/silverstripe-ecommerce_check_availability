@@ -70,42 +70,6 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 		parent::onBeforeWrite();
 	}
 
-	function onAfterWrite() {
-		parent::onAfterWrite();
-		if($this->AvailabilityChecked) {
-			$order = $this->Order();
-			if($order) {
-				if(!$order->IsSubmitted()) {
-					if(class_exists("EcommerceConfig")) {
-						$className = EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order");
-					}
-					else {
-						$className = OrderStatusLog::get_order_status_log_class_used_for_submitting_order;
-					}
-					if(class_exists($className)) {
-						$obj = new $className();
-						if($obj instanceOf OrderStatusLog) {
-							$obj->OrderID = $order->ID;
-							$obj->Title = $this->Name;
-							$saved = false;
-							if($this->SaveOrderAsJSON)                        {$obj->OrderAsJSON = $order->ConvertToJSON(); $saved = true;}
-							if($this->SaveOrderAsHTML)                        {$obj->OrderAsHTML = $order->ConvertToHTML(); $saved = true;}
-							if($this->SaveOrderAsSerializedObject|| !$saved)  {$obj->OrderAsString = $order->ConvertToString();$saved = true; }
-							$obj->write();
-						}
-						else {
-							user_error('EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order") refers to a class that is NOT an instance of OrderStatusLog');
-						}
-
-					}
-					else {
-						user_error('EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order") refers to a non-existing class');
-					}
-				}
-			}
-		}
-	}
-
 
 	/**
 	*
