@@ -22,17 +22,14 @@ class OrderStep_CheckAvailability extends OrderStep {
 	}
 
 	public function doStep($order) {
-		if($order->Total() < $this->MinimumOrderAmount) {
-			return true;
-		}
-		else {
+		if($order->Total() > $this->MinimumOrderAmount) {
 			$subject = $this->EmailSubject;
 			$message = $this->CustomerMessage;
 			if(!$this->hasBeenSent($order)) {
-				return $order->sendStatusChange($subject, $message);
+				$order->sendStatusChange($subject, $message);
 			}
-			return true;
 		}
+		return true;
 	}
 
 	/**
@@ -76,6 +73,14 @@ class OrderStep_CheckAvailability extends OrderStep {
 	 **/
 	public function AlternativeDisplayPage() {
 		return DataObject::get_one("OrderConfirmationPage");
+	}
+
+	/**
+	 * Explains the current order step.
+	 * @return String
+	 */
+	protected function myDescription(){
+		return _t("OrderStep_CheckAvailability.DESCRIPTION", "Allows the shop admin to check product availability for confirming order.");
 	}
 
 }

@@ -55,7 +55,7 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 		$fields->removeByName("EmailSent");
 		$fields->addFieldToTab(
 			'Root.Main',
-			new CheckboxField("AvailabilityChecked", _t("OrderStatusLog.CHECKED", "Availability is confirmed"))
+			new CheckboxField("AvailabilityChecked", _t("OrderStatusLog.CHECKED", "Availability is confirmed (we can proceed with this order)"))
 		);
 		return $fields;
 	}
@@ -70,6 +70,14 @@ class OrderStatusLog_CheckAvailability extends OrderStatusLog {
 		parent::onBeforeWrite();
 	}
 
+
+	function onAfterWrite(){
+		if($this->AvailabilityChecked) {
+			if($order = $this->Order()) {
+				$order->tryToFinaliseOrder();
+			}
+		}
+	}
 
 	/**
 	*
