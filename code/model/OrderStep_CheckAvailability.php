@@ -22,14 +22,47 @@ class OrderStep_CheckAvailability extends OrderStep {
 	}
 
 	public function doStep($order) {
-		if($order->Total() > $this->MinimumOrderAmount) {
+		$noNeedToCheck = false;
+		if($this->doesNotNeedToBeChecked($order) ) {
 			$subject = $this->EmailSubject;
-			$message = $this->CustomerMessage;
-			if(!$this->hasBeenSent($order)) {
-				$order->sendStatusChange($subject, $message);
+			if($subject) {
+				$message = $this->CustomerMessage;
+				if(!$this->hasBeenSent($order)) {
+					$order->sendStatusChange($subject, $message);
+				}
 			}
 		}
-		return true;
+		else {
+			$noNeedToCheck =  true;
+		}
+		if($noNeedToCheck || $this->hasBeenChecked($order) ) {
+			if(!$order->IsSubmitted()) {
+				$className = EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order");
+				if(class_exists($className)) {
+					$obj = new $className();
+					if($obj instanceOf OrderStatusLog) {
+						$obj->OrderID = $order->ID;
+						$obj->Title = $this->Name;
+						//it is important we add this here so that we can save the 'submitted' version.
+						//this is particular important for the Order Item Links.
+						$obj->write();
+						$saved = false;
+						if($this->SaveOrderAsJSON)												{$obj->OrderAsJSON = $order->ConvertToJSON(); $saved = true;}
+						if($this->SaveOrderAsHTML)												{$obj->OrderAsHTML = $order->ConvertToHTML(); $saved = true;}
+						if($this->SaveOrderAsSerializedObject || !$saved)	{$obj->OrderAsString = $order->ConvertToString();$saved = true; }
+						$obj->write();
+					}
+					else {
+						user_error('EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order") refers to a class that is NOT an instance of OrderStatusLog');
+					}
+				}
+				else {
+					user_error('EcommerceConfig::get("OrderStatusLog", "order_status_log_class_used_for_submitting_order") refers to a non-existing class');
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -37,10 +70,7 @@ class OrderStep_CheckAvailability extends OrderStep {
 	 *@return DataObject | Null - DataObject = OrderStep
 	 **/
 	public function nextStep($order) {
-		if($order->Total() < $this->MinimumOrderAmount) {
-			return parent::nextStep($order);
-		}
-		if(DataObject::get_one("OrderStatusLog_CheckAvailability", "\"OrderID\" = ".$order->ID." AND \"AvailabilityChecked\" = 1")) {
+		if( ($this->doesNotNeedToBeChecked($order)) || $this->hasBeenChecked($order) ) {
 			return parent::nextStep($order);
 		}
 		return null;
@@ -83,4 +113,12 @@ class OrderStep_CheckAvailability extends OrderStep {
 		return _t("OrderStep_CheckAvailability.DESCRIPTION", "Allows the shop admin to check product availability for confirming order.");
 	}
 
+
+	protected function doesNotNeedToBeChecked($order){
+		return DataObject::get_one("OrderStatusLog_CheckAvailability", "\"OrderID\" = ".$order->ID." AND \"AvailabilityChecked\" = 1");
+	}
+
+	protected function hasBeenChecked($order){
+		return DataObject::get_one("OrderStatusLog_CheckAvailability", "\"OrderID\" = ".$order->ID." AND \"AvailabilityChecked\" = 1");
+	}
 }
