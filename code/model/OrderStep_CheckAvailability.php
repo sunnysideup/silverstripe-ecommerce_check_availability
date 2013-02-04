@@ -28,7 +28,7 @@ class OrderStep_CheckAvailability extends OrderStep {
 			if($subject) {
 				$message = $this->CustomerMessage;
 				if(!$this->hasBeenSent($order)) {
-					$order->sendStatusChange($subject, $message);
+					$order->sendEmail($subject, $message, $resend = false, $adminOnly = false, $emailClass = 'Order_StatusEmail');
 				}
 			}
 		}
