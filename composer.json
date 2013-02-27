@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/ecommerce_check_availability",
+	"name": "sunnysideup/ecommerce_check_availability",
 	"type": "silverstripe-module",
 	"description": "checks product availability",
 	"homepage": "http://www.silverstripe-ecommerce.com",
