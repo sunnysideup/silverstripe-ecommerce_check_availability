@@ -1,7 +1,6 @@
-###############################################
+
 E-commerce Availability Check
-Pre 0.1 proof of concept
-###############################################
+================================================================================
 
 This module allows you to create orders that need
 to be checked for availability.  For example - people
