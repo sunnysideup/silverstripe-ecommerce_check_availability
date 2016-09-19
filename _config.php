@@ -10,4 +10,3 @@
 //===================---------------- START ecommerce_check_availability MODULE ----------------===================
 //OrderStep::add_order_step_to_include("OrderStep_CheckAvailability", $placeAfter = "OrderStep_Created");
 //===================---------------- END ecommerce_check_availability MODULE ----------------===================
-
